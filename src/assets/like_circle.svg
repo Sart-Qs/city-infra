@@ -1,0 +1,13 @@
+<svg viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14.000000" height="14.000000" fill="none" clip-path="url(#clipPath_0)" customFrame="url(#clipPath_0)">
+	<defs>
+		<linearGradient id="paint_linear_0" x1="-7" x2="6.99999523" y1="7" y2="21" gradientUnits="userSpaceOnUse">
+			<stop stop-color="rgb(255,82,99)" offset="0" stop-opacity="1" />
+			<stop stop-color="rgb(255,51,71)" offset="1" stop-opacity="1" />
+		</linearGradient>
+		<clipPath id="clipPath_0">
+			<rect width="14.000000" height="14.000000" x="0.000000" y="0.000000" rx="7.000000" fill="rgb(255,255,255)" />
+		</clipPath>
+	</defs>
+	<rect id="like_circle_fill_red_29" width="14.000000" height="14.000000" x="0.000000" y="0.000000" rx="7.000000" fill="url(#paint_linear_0)" />
+	<path id="↳ Icon Color" d="M8.42951 4.5C9.43494 4.5 10.25 5.30576 10.25 6.29971C10.25 7.30349 9.84319 7.80677 8.11767 9.13352L7.33255 9.7372C7.13695 9.8876 6.86305 9.8876 6.66745 9.7372L5.88233 9.13352C4.15681 7.80677 3.75 7.30349 3.75 6.29971C3.75 5.30576 4.56506 4.5 5.57049 4.5C6.10917 4.5 6.58781 4.75069 7 5.23573C7.41219 4.75069 7.89083 4.5 8.42951 4.5Z" fill="rgb(255,255,255)" fill-rule="evenodd" />
+</svg>
