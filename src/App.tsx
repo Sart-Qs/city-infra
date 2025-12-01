@@ -3,7 +3,6 @@ import LoginPage from './page/login/login'
 import MainPage from './page/main/main'
 import ProfilePage from './page/profile/profile'
 import ChatPage from './page/chat/chat'
-import type {IUser} from "./model/user";
 
 //TODO chage routes after create pages
 

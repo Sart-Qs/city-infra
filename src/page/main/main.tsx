@@ -1,5 +1,4 @@
 import React, {useState, useRef, useEffect } from 'react';
-import { Map, Placemark, SearchControl, YMaps, ZoomControl } from '@pbe/react-yandex-maps';
 import Dot from '../../components/dot/dot'
 import { useNavigate } from 'react-router-dom';
 import addMark from '../../assets/main/addMark.svg'
@@ -11,11 +10,8 @@ import { getAllEvents, saveEvents } from '../../services/eventService';
 import type { IJwtResponse } from '../../model/jwtResponse';
 import { jwtDecode } from 'jwt-decode';
 import type { IEventResponse } from '../../model/eventResponse';
-import type {} from '@yandex/ymaps3-types';
+import { YMap, YMapControls, YMapDefaultFeaturesLayer, YMapDefaultSchemeLayer, YMapMarker } from '../../lib/ymaps';
 
-
-    
-const API_KEY = import.meta.env.VITE_YANDEX_API_KEY;
 const token = localStorage.getItem("token");
 const getUserId = (): IJwtResponse | undefined => {
     if (token !== null) {
@@ -121,17 +117,14 @@ function MainPage() {
     return (
         <div className='h-screen w-screen'>
             
-            <YMaps query={{apikey: API_KEY}}>
-                <Map onClick = {(e) => {palcemarkSet(e)}} defaultState={{ center:[51.660985, 39.200079], zoom: 12, controls: []}} style={{ width: '100%', height: '100%' }}>
-                <ZoomControl options={{size: "small", position:{top: window.screen.availHeight*0.45, right: 15}}}/>
-               
-                {coordinates && (<Placemark geometry={coordinates}/>)}
-                {allEvents && allEvents.map((e) => {
-                    return <Placemark geometry={e.coordinates}/>
-                })
-                }
-               </Map>
-            </YMaps>
+            <YMap location={{center: [39.200296, 51.660781], zoom: 12}} mode="vector">
+                <YMapDefaultSchemeLayer />
+                <YMapDefaultFeaturesLayer />
+                <YMapControls position ="left"/>
+                {allEvents && allEvents.map((e) =>{
+                     return (<YMapMarker coordinates ={e.coordinates}/>)
+                })}
+            </YMap>
 
             <div className='fixed top-5 right-6'>
                 <div className='flex gap-2.5 '>
