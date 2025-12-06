@@ -147,7 +147,7 @@ function MainPage() {
                 {coord && 
                     (<YMapDefaultMarker coordinates={coord} size={"normal"}/>)}
                 <YMapListener
-                    onClick={(object, event) => {palcemarkSet(event.coordinates)}}
+                    onClick={(object, event) => {object ? console.log("Нажатие на объект карты") : palcemarkSet(event.coordinates)}}
                     onUpdate={(type, camera, location) => {updateHandler(type, camera, location)}}
                 />
             </YMap>

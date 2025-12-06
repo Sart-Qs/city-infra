@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { IProfileUserData } from "../../model/profileUserData";
 import { getProfileUserData } from "../../services/profileService";
+import { Event } from "../../components/event/event";
 
 
 function ProfilePage() {
@@ -12,7 +13,8 @@ function ProfilePage() {
         firstName: "", 
         id: 0, 
         lastName: "", 
-        location: ""
+        location: "",
+        events: []
     });
 
     useEffect(() =>{
@@ -26,7 +28,8 @@ function ProfilePage() {
                     firstName: response.firstName,
                     id: response.id,
                     lastName: response.lastName,
-                    location: response.location
+                    location: response.location,
+                    events: response.events,
                 });
                 }
 
@@ -100,12 +103,18 @@ function ProfilePage() {
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-2xl font-bold text-gray-800">Мои точки</h2>
                                 <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-                                    {} количество точек
+                                    {userData.events.length} количество точек
                                 </span>
                             </div>
 
                             {/* Список ивентов */}
                             <div className="space-y-4">
+                                {userData.events && (
+                                    userData.events.map((e, i) =>{
+                                        //TODO Поменять заглушку 
+                                        return <Event key={e.id} coordinates={e.coordinates} type={""} timestomp={e.timestomp}/>
+                                    })
+                                )}
                             </div>
 
 
