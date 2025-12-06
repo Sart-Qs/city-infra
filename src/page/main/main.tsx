@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect, useCallback } from 'react';
 import Dot from '../../components/dot/dot'
 import { useNavigate } from 'react-router-dom';
 import addMark from '../../assets/main/addMark.svg'
@@ -10,7 +10,8 @@ import { getAllEvents, saveEvents } from '../../services/eventService';
 import type { IJwtResponse } from '../../model/jwtResponse';
 import { jwtDecode } from 'jwt-decode';
 import type { IEventResponse } from '../../model/eventResponse';
-import { YMap, YMapControls, YMapDefaultFeaturesLayer, YMapDefaultSchemeLayer, YMapMarker } from '../../lib/ymaps';
+import {YMap, YMapControls, YMapDefaultFeaturesLayer, YMapDefaultMarker, YMapDefaultSchemeLayer, YMapListener} from '../../lib/ymaps';
+import type {MapEventUpdateHandler, YMapCameraRequest, YMapCenterZoomLocation, YMapLocationRequest} from '@yandex/ymaps3-types'
 
 const token = localStorage.getItem("token");
 const getUserId = (): IJwtResponse | undefined => {
@@ -28,30 +29,40 @@ const getUserId = (): IJwtResponse | undefined => {
 
 
 function MainPage() {
+    const startLocation: YMapCenterZoomLocation = {
+        center: [39.200296, 51.660781],
+        zoom: 12
+    }
+    const startCamera: YMapCameraRequest = {
+        azimuth: 0,
+        tilt: 0,
+    }
+    const [mapState, setMapState] = useState<{location: YMapLocationRequest; camera: YMapCameraRequest}>({
+        location: startLocation,
+        camera: startCamera
+    });
     const [showAddMarkPopup, setShowAddMarkPopup] = useState<boolean>(false);
     const [allEvents, setAllEvevnts] = useState<Array<IEventResponse>>();
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
     const [description, setDescription] = useState<string>('');
-    const [coordinates, setCoordinates] = useState<number[]>([]);
-    
+    const [coord, setCoordinates] = useState<number[]>();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const userId = getUserId();
     const navigate = useNavigate();
+
 
     useEffect(() =>{
         getAllEvents().then((response) => {
             if (response)
             setAllEvevnts(response);
         })
-
     },[])
 
     function palcemarkSet (e) {
-        const coords = e.get("coords")
+        console.log(e);
         
-        if(coords){
-            console.log(coords)
-            setCoordinates(coords)
+        if(e){
+            setCoordinates(e)
         }
     }
 
@@ -82,11 +93,21 @@ function MainPage() {
         setSelectedImages(prev => prev.filter((_, i) => i !== index));
     };
 
+    const updateHandler: MapEventUpdateHandler  = useCallback(({camera, location}) =>{
+        setMapState({
+            location:{
+                center: location.center,
+                zoom: location.zoom
+            },
+            camera
+        })
+    },[])
+
     const handleSubmit = async () => {
         const formData = new FormData()
         if(fileInputRef.current?.files){
             const eventRequest: IEventRequest = {
-                coordinates: coordinates || [0,0],
+                coordinates: coord || [0,0],
                 description: description,
                 userId: userId?.id || 0,
 
@@ -112,21 +133,26 @@ function MainPage() {
         setShowAddMarkPopup(false);
     };
 
-
-
     return (
         <div className='h-screen w-screen'>
-            
-            <YMap location={{center: [39.200296, 51.660781], zoom: 12}} mode="vector">
+
+            <YMap location={mapState.location} propagateEvents={true}>
                 <YMapDefaultSchemeLayer />
                 <YMapDefaultFeaturesLayer />
                 <YMapControls position ="left"/>
-                {allEvents && allEvents.map((e) =>{
-                     return (<YMapMarker coordinates ={e.coordinates}/>)
+                <YMapDefaultMarker coordinates = {[39.200296, 51.660781]} size={"small"}/>
+                {allEvents && allEvents.map((element, i) =>{
+                    return <YMapDefaultMarker key={i} coordinates={element.coordinates} size={"micro"}/>
                 })}
+                {coord && 
+                    (<YMapDefaultMarker coordinates={coord} size={"normal"}/>)}
+                <YMapListener
+                    onClick={(object, event) => {palcemarkSet(event.coordinates)}}
+                    onUpdate={(type, camera, location) => {updateHandler(type, camera, location)}}
+                />
             </YMap>
-
-            <div className='fixed top-5 right-6'>
+            
+            <div className='fixed top-5 right-6' id='2'>
                 <div className='flex gap-2.5 '>
                     <Dot svg={notification}/>
                     <Dot svg={chat} onClick={chatNav}/>
