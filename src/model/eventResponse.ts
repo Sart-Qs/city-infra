@@ -2,6 +2,7 @@ export interface IEventResponse{
     id: number,
     coordinates: Array<number>,
     userId: number,
-    descripriob: string,
-    files: Array<string>
+    description: string,
+    files: Array<string>,
+    timestomp: Date
 }
