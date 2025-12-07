@@ -14,15 +14,15 @@ export const YMapMarkerPopUp: React.FC<IMarker> = ({
     const [showBallonPopUp, setShowBallonPopUp] = useState<boolean>(false);
 
     function showPopUp(){
-        console.log(images + " images")
         return(
             <div className="w-3xs h-80">
-
                 {images && (
                     images.map((e,i) =>{
                         return <img className="w-full h-35" key={i} src={e}/>
                     })
                 )}
+
+
             </div>
         )
     }

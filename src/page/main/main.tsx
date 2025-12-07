@@ -9,6 +9,7 @@ import type { IEventResponse } from '../../model/eventResponse';
 import {YMap, YMapControls, YMapDefaultFeaturesLayer, YMapDefaultMarker, YMapDefaultSchemeLayer, YMapListener} from '../../lib/ymaps';
 import type {MapEventUpdateHandler, YMapCameraRequest, YMapCenterZoomLocation, YMapLocationRequest} from '@yandex/ymaps3-types'
 import { YMapMarkerPopUp } from '../../components/ballonPopUp/ballonPopUp';
+import { FileImage, Image, X } from 'lucide-react';
 
 const token = localStorage.getItem("token");
 const getUserId = (): IJwtResponse | undefined => {
@@ -170,9 +171,7 @@ function MainPage() {
                                 onClick={handleClosePopup}
                                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                             >
-                                <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <X/>
                             </button>
                         </div>
 
@@ -206,13 +205,10 @@ function MainPage() {
                                 )}
 
                                 {/* Кнопка загрузки */}
-                                <div
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center cursor-pointer hover:border-blue-500 transition-colors"
-                                >
-                                    <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
+                                <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center cursor-pointer hover:border-blue-500 transition-colors">
+                                    <div className="flex justify-center mb-2">
+                                        <Image size={60} />
+                                    </div>
                                     <p className="text-gray-600 mb-2">Нажмите для загрузки фото</p>
                                     <p className="text-sm text-gray-500">Можно выбрать несколько файлов</p>
                                 </div>

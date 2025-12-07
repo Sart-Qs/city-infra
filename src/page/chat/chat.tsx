@@ -11,6 +11,7 @@ import { jwtDecode } from "jwt-decode";
 import type { IFindUserResponse } from "../../model/findUserResponse";
 import { FindUser } from "../../components/findUser/findUser";
 import type { IMessageRequest } from "../../model/messageRequest";
+import { ArrowLeft, Paperclip, Plus, Send } from "lucide-react";
 
 const token = localStorage.getItem("token");
     const getUserId = (): IJwtResponse | undefined => {
@@ -146,18 +147,14 @@ function ChatPage() {
                                 onClick={handleBackClick}
                                 className="p-2 hover:bg-gray-100 rounded-full transition-colors mr-2" // Добавлен mr-2 для отступа
                             >
-                                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                                </svg>
+                                <ArrowLeft/>
                             </button>
                             <h1 className="text-xl font-bold text-gray-800">Сообщения</h1>
                             <button
                                 onClick={handlePlusClick}
                                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                             >
-                                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                </svg>
+                                <Plus/>
                             </button>
                         </div>
                         <div className="relative">
@@ -198,9 +195,7 @@ function ChatPage() {
                     <div className="bg-white border-t border-gray-200 p-4">
                         <div className="flex items-center space-x-4">
                             <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                                <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                </svg>
+                                <Paperclip/>
                             </button>
                             <div className="flex-1">
                                 <input
@@ -211,9 +206,7 @@ function ChatPage() {
                             </div>
                             <button className="p-3 bg-blue-500 hover:bg-blue-600 rounded-full transition-colors"
                                     onClick={send}>
-                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                </svg>
+                                <Send color="white"/>
                             </button>
                         </div>
                     </div>
