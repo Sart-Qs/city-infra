@@ -3,6 +3,6 @@ export interface IEventResponse{
     coordinates: Array<number>,
     userId: number,
     description: string,
-    files: Array<string>,
+    filesUrl: Array<string>,
     timestomp: Date
 }

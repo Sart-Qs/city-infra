@@ -1,10 +1,6 @@
 import React, {useState, useRef, useEffect, useCallback } from 'react';
 import Dot from '../../components/dot/dot'
 import { useNavigate } from 'react-router-dom';
-import addMark from '../../assets/main/addMark.svg'
-import chat from '../../assets/main/chat.svg'
-import notification from '../../assets/main/notification.svg'
-import profile from '../../assets/main/profile.svg'
 import type { IEventRequest } from '../../model/eventRequest';
 import { getAllEvents, saveEvents } from '../../services/eventService';
 import type { IJwtResponse } from '../../model/jwtResponse';
@@ -12,6 +8,7 @@ import { jwtDecode } from 'jwt-decode';
 import type { IEventResponse } from '../../model/eventResponse';
 import {YMap, YMapControls, YMapDefaultFeaturesLayer, YMapDefaultMarker, YMapDefaultSchemeLayer, YMapListener} from '../../lib/ymaps';
 import type {MapEventUpdateHandler, YMapCameraRequest, YMapCenterZoomLocation, YMapLocationRequest} from '@yandex/ymaps3-types'
+import { YMapMarkerPopUp } from '../../components/ballonPopUp/ballonPopUp';
 
 const token = localStorage.getItem("token");
 const getUserId = (): IJwtResponse | undefined => {
@@ -41,6 +38,7 @@ function MainPage() {
         location: startLocation,
         camera: startCamera
     });
+
     const [showAddMarkPopup, setShowAddMarkPopup] = useState<boolean>(false);
     const [allEvents, setAllEvevnts] = useState<Array<IEventResponse>>();
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
@@ -140,9 +138,9 @@ function MainPage() {
                 <YMapDefaultSchemeLayer />
                 <YMapDefaultFeaturesLayer />
                 <YMapControls position ="left"/>
-                <YMapDefaultMarker coordinates = {[39.200296, 51.660781]} size={"small"}/>
                 {allEvents && allEvents.map((element, i) =>{
-                    return <YMapDefaultMarker key={i} coordinates={element.coordinates} size={"micro"}/>
+                    console.log(element.filesUrl)
+                    return <YMapMarkerPopUp key={i} coords={element.coordinates} images={element.filesUrl}/>
                 })}
                 {coord && 
                     (<YMapDefaultMarker coordinates={coord} size={"normal"}/>)}
@@ -154,10 +152,10 @@ function MainPage() {
             
             <div className='fixed top-5 right-6' id='2'>
                 <div className='flex gap-2.5 '>
-                    <Dot svg={notification}/>
-                    <Dot svg={chat} onClick={chatNav}/>
-                    <Dot svg={addMark} onClick={handleAddMarkClick}/>
-                    <Dot svg={profile} onClick={profileNav}/>
+                    <Dot type='notification'/>
+                    <Dot type="chat" onClick={chatNav}/>
+                    <Dot type='mark' onClick={handleAddMarkClick}/>
+                    <Dot type='profile' onClick={profileNav}/>
                 </div>
             </div>
 
