@@ -10,5 +10,3 @@ export interface IProfileUserData{
     avatar: string
     events: IEventResponse[]
 }
-
-//TODO добавить мероприятия в интерфейс

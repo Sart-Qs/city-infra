@@ -57,6 +57,7 @@ function MainPage() {
         })
     },[])
 
+
     function palcemarkSet (e) {
         console.log(e);
         
@@ -91,16 +92,6 @@ function MainPage() {
     const removeImage = (index: number) => {
         setSelectedImages(prev => prev.filter((_, i) => i !== index));
     };
-
-    const updateHandler: MapEventUpdateHandler  = useCallback(({camera, location}) =>{
-        setMapState({
-            location:{
-                center: location.center,
-                zoom: location.zoom
-            },
-            camera
-        })
-    },[])
 
     const handleSubmit = async () => {
         const formData = new FormData()
@@ -141,13 +132,13 @@ function MainPage() {
                 <YMapControls position ="left"/>
                 {allEvents && allEvents.map((element, i) =>{
                     console.log(element.filesUrl)
-                    return <YMapMarkerPopUp key={i} coords={element.coordinates} images={element.filesUrl}/>
+                    return <YMapMarkerPopUp key={i} coords={element.coordinates} images={element.filesUrl} likes={2}/>
                 })}
                 {coord && 
                     (<YMapDefaultMarker coordinates={coord} size={"normal"}/>)}
                 <YMapListener
                     onClick={(object, event) => {object ? console.log("Нажатие на объект карты") : palcemarkSet(event.coordinates)}}
-                    onUpdate={(type, camera, location) => {updateHandler(type, camera, location)}}
+
                 />
             </YMap>
             
