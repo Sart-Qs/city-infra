@@ -6,10 +6,12 @@ import { getAllEvents, saveEvents } from '../../services/eventService';
 import type { IJwtResponse } from '../../model/jwtResponse';
 import { jwtDecode } from 'jwt-decode';
 import type { IEventResponse } from '../../model/eventResponse';
-import {YMap, YMapControls, YMapDefaultFeaturesLayer, YMapDefaultMarker, YMapDefaultSchemeLayer, YMapListener} from '../../lib/ymaps';
-import type {MapEventUpdateHandler, YMapCameraRequest, YMapCenterZoomLocation, YMapLocationRequest} from '@yandex/ymaps3-types'
+import {YMap, YMapControls, YMapDefaultFeaturesLayer, YMapDefaultMarker, YMapDefaultSchemeLayer, YMapListener, YMapZoomControl, } from '../../lib/ymaps';
+import type {YMapCameraRequest, YMapCenterZoomLocation, YMapLocationRequest} from '@yandex/ymaps3-types'
 import { YMapMarkerPopUp } from '../../components/ballonPopUp/ballonPopUp';
 import { FileImage, Image, X } from 'lucide-react';
+import type { YMapCamera, YMapLocation } from '@yandex/ymaps3-types/imperative/YMap';
+import type {MapEventUpdateHandler} from '@yandex/ymaps3-types'
 
 const token = localStorage.getItem("token");
 const getUserId = (): IJwtResponse | undefined => {
@@ -25,6 +27,7 @@ const getUserId = (): IJwtResponse | undefined => {
     return undefined;
 };
 
+//TODO сделать что при открытом popup нельзя было двойным кликом приближать
 
 function MainPage() {
     const startLocation: YMapCenterZoomLocation = {
@@ -117,6 +120,14 @@ function MainPage() {
         setShowAddMarkPopup(false);
     };
 
+    const changeZoomAndLocation: MapEventUpdateHandler  = useCallback(({camera, location})=>{
+        setMapState(prev => {
+            prev.location = location
+            prev.camera = camera;
+            return prev;
+        })
+    },[]);
+
     const handleClosePopup = () => {
         setSelectedImages([]);
         setDescription('');
@@ -129,17 +140,20 @@ function MainPage() {
             <YMap location={mapState.location} propagateEvents={true}>
                 <YMapDefaultSchemeLayer />
                 <YMapDefaultFeaturesLayer />
-                <YMapControls position ="left"/>
                 {allEvents && allEvents.map((element, i) =>{
                     console.log(element.filesUrl)
                     return <YMapMarkerPopUp key={i} coords={element.coordinates} images={element.filesUrl} likes={2}/>
                 })}
-                {coord && 
-                    (<YMapDefaultMarker coordinates={coord} size={"normal"}/>)}
+                {coord && (<YMapDefaultMarker coordinates={coord} size={"normal"}/>)}
+
                 <YMapListener
                     onClick={(object, event) => {object ? console.log("Нажатие на объект карты") : palcemarkSet(event.coordinates)}}
+                    onUpdate={changeZoomAndLocation}
+                 />
 
-                />
+                <YMapControls  position="right">
+                    <YMapZoomControl />
+                </YMapControls>
             </YMap>
             
             <div className='fixed top-5 right-6' id='2'>
