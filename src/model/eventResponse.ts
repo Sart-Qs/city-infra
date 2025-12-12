@@ -1,8 +1,10 @@
+import type { IUser } from "./user";
+
 export interface IEventResponse{
     id: number,
     coordinates: Array<number>,
-    userId: number,
+    user: IUser,
     description: string,
-    filesUrl: Array<string>,
+    fileUrl: string[],
     timestomp: Date
 }
