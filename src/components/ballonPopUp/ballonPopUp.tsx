@@ -4,6 +4,7 @@ import { Heart } from "lucide-react";
 import type { PolygonGeometry } from "@yandex/ymaps3-types";
 import {circle} from "@turf/turf"
 import type { IUser } from "../../model/user";
+import { Comment } from "../comment/comment";
 
 interface IMarker{
     coords: number[],
@@ -77,7 +78,9 @@ export const YMapMarkerPopUp: React.FC<IMarker> = ({
                         {like}
                     </div>
                 </div>
-
+                <div className="ml-10">
+                    <Comment commentContent="Привет" likes={3} user={user} key={user.id}/>
+                </div>
             </div>
         )
     }

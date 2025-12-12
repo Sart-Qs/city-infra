@@ -16,11 +16,11 @@ const token = localStorage.getItem("token");
 const getUserId = (): IJwtResponse | undefined => {
     if (token !== null) {
         try {
-             const tok: IJwtResponse = jwtDecode(token);
+            const tok: IJwtResponse = jwtDecode(token);
             return tok;
         } catch (error) {
             console.error("Ошибка декодирования токена:", error);
-             return undefined;
+            return undefined;
        }
     }
     return undefined;
