@@ -6,11 +6,10 @@ import { getAllEvents, saveEvents } from '../../services/eventService';
 import type { IJwtResponse } from '../../model/jwtResponse';
 import { jwtDecode } from 'jwt-decode';
 import type { IEventResponse } from '../../model/eventResponse';
-import {YMap, YMapControls, YMapDefaultFeaturesLayer, YMapDefaultMarker, YMapDefaultSchemeLayer, YMapListener, YMapZoomControl, } from '../../lib/ymaps';
+import {YMap, YMapControls, YMapDefaultFeaturesLayer, YMapDefaultMarker, YMapDefaultSchemeLayer, YMapFeature, YMapListener, YMapZoomControl, } from '../../lib/ymaps';
 import type {YMapCameraRequest, YMapCenterZoomLocation, YMapLocationRequest} from '@yandex/ymaps3-types'
 import { YMapMarkerPopUp } from '../../components/ballonPopUp/ballonPopUp';
-import { FileImage, Image, X } from 'lucide-react';
-import type { YMapCamera, YMapLocation } from '@yandex/ymaps3-types/imperative/YMap';
+import { Image, X } from 'lucide-react';
 import type {MapEventUpdateHandler} from '@yandex/ymaps3-types'
 
 const token = localStorage.getItem("token");
@@ -29,6 +28,13 @@ const getUserId = (): IJwtResponse | undefined => {
 
 //TODO сделать что при открытом popup нельзя было двойным кликом приближать
 
+interface IGeoObject{
+    type: string,
+    entity?: any,
+    source: string,
+    layer: string
+}
+
 function MainPage() {
     const startLocation: YMapCenterZoomLocation = {
         center: [39.200296, 51.660781],
@@ -44,10 +50,11 @@ function MainPage() {
     });
 
     const [showAddMarkPopup, setShowAddMarkPopup] = useState<boolean>(false);
+    const [inRadius, setInRadius] = useState<boolean>(false);
     const [allEvents, setAllEvevnts] = useState<Array<IEventResponse>>();
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
     const [description, setDescription] = useState<string>('');
-    const [coord, setCoordinates] = useState<number[]>();
+    const [coord, setCoordinates] = useState<number[] | null>();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const userId = getUserId();
     const navigate = useNavigate();
@@ -61,11 +68,14 @@ function MainPage() {
     },[])
 
 
-    function palcemarkSet (e) {
-        console.log(e);
-        
+    function palcemarkSet (e: number[], object?: IGeoObject) {
         if(e){
-            setCoordinates(e)
+            setCoordinates(e);
+            if(object?.type == "feature"){
+                setInRadius(true);
+            }else{
+                setInRadius(false);
+            }
         }
     }
 
@@ -98,6 +108,12 @@ function MainPage() {
 
     const handleSubmit = async () => {
         const formData = new FormData()
+
+        if(inRadius && !confirm("Рядом есть ещё одна точка")){
+            console.log("net");
+            return;
+        }
+
         if(fileInputRef.current?.files){
             const eventRequest: IEventRequest = {
                 coordinates: coord || [0,0],
@@ -108,13 +124,15 @@ function MainPage() {
             Array.from(fileInputRef.current?.files).forEach((file) => {
                 formData.append('file', file);
             })
-                    
+            
             if (eventRequest) {
                 await saveEvents(eventRequest, formData);
-                getAllEvents();
+                getAllEvents().then((response) =>{
+                    setAllEvevnts(response);
+                });
             }
         }
-
+        setCoordinates(null);
         setSelectedImages([]);
         setDescription('');
         setShowAddMarkPopup(false);
@@ -141,13 +159,14 @@ function MainPage() {
                 <YMapDefaultSchemeLayer />
                 <YMapDefaultFeaturesLayer />
                 {allEvents && allEvents.map((element, i) =>{
-                    console.log(element.filesUrl)
-                    return <YMapMarkerPopUp key={i} coords={element.coordinates} images={element.filesUrl} likes={2}/>
+                    console.log(element.fileUrl);
+                    return <YMapMarkerPopUp key={element.id} coords={element.coordinates} images={element.fileUrl} likes={2} user={element.user} description={element.description}/>
                 })}
                 {coord && (<YMapDefaultMarker coordinates={coord} size={"normal"}/>)}
+                
 
                 <YMapListener
-                    onClick={(object, event) => {object ? console.log("Нажатие на объект карты") : palcemarkSet(event.coordinates)}}
+                    onClick={(object: IGeoObject, event: {coordinates: number[], screenCoordinates: number[]}) => {object && (object.type != "feature" && object.type != "hotspot") ? console.log(object) : palcemarkSet(event.coordinates, object)}}
                     onUpdate={changeZoomAndLocation}
                  />
 

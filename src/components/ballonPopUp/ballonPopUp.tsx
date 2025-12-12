@@ -1,17 +1,24 @@
 import { useEffect, useRef, useState } from "react";
-import { YMapDefaultMarker } from "../../lib/ymaps"
+import { YMapDefaultMarker, YMapFeature } from "../../lib/ymaps"
 import { Heart } from "lucide-react";
+import type { PolygonGeometry } from "@yandex/ymaps3-types";
+import {circle} from "@turf/turf"
+import type { IUser } from "../../model/user";
 
 interface IMarker{
     coords: number[],
     images: string[],
     likes: number,
+    user: IUser,
+    description: string
 }   
 
 export const YMapMarkerPopUp: React.FC<IMarker> = ({
     coords,
     images,
     likes,
+    user,
+    description
 }) =>{
     const [showBallonPopUp, setShowBallonPopUp] = useState<boolean>(false);
     const [like, setLikes] = useState<number>(likes);
@@ -30,15 +37,20 @@ export const YMapMarkerPopUp: React.FC<IMarker> = ({
         }else if(pressLike){
             setLikes(prev => prev-1);
         }
-
     }
 
-    function showPopUp(){
+    const circleGemonetry = (center: number[]): PolygonGeometry =>{
+        const {geometry} = circle(center, 100, {units: "meters"});
+        return geometry as PolygonGeometry;
+    }
+
+    function showPopUp(){``
         return(
             <div className="w-3xs h-80 overflow-y-auto overflow-x-hidden">
                 <div className="mb-0.5">
                     {images && (
                         images.map((e,i) =>{
+                            console.log(e);
                             return <img className="w-full h-35" key={i} src={e}/>
                         })
                     )}
@@ -49,10 +61,10 @@ export const YMapMarkerPopUp: React.FC<IMarker> = ({
                     </div>
                     <div className="ml-0.5">
                         <div className="font-bold">
-                            Имя Фамилия
+                            {`${user.firstName}  ${user.lastName}`}
                         </div>
                         <div className="break-all">
-                            Описание 
+                            {description} 
                         </div>    
                     </div>
                     
@@ -71,14 +83,25 @@ export const YMapMarkerPopUp: React.FC<IMarker> = ({
     }
 
     return(
-        <YMapDefaultMarker onClick={() => {setShowBallonPopUp(!showBallonPopUp)}} coordinates={coords}
-            popup={{
-                position: "top",
-                content: showPopUp,
-                show: showBallonPopUp
-            }}
-            size="micro"
+        <>
+            <YMapFeature geometry={circleGemonetry(coords)}
+                style={{
+                    fill: 'rgba(56, 56, 219, 0.0)',
+                    stroke:[{
+                        opacity: 1
+                    }]
+                }}
             />
+            <YMapDefaultMarker onClick={() => {setShowBallonPopUp(!showBallonPopUp)}} coordinates={coords}
+                popup={{
+                    position: "top",
+                    content: showPopUp,
+                    show: showBallonPopUp
+                }}
+                size="micro"
+            />
+        </>
+
     )
 
 }

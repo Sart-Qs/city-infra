@@ -19,5 +19,6 @@ export const {
     YMapMarker, 
     YMapControls,
     YMapListener,
+    YMapFeature,
 } = reactify.module(ymaps3);
 
