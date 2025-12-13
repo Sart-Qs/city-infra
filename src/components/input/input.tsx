@@ -2,7 +2,7 @@ import type React from "react";
 
 interface IInput{
     name?: string,
-    value?: (e:React.ChangeEvent<HTMLInputElement>) => void,
+    onChange?: (e:React.ChangeEvent<HTMLInputElement>) => void,
     type: string
 }
 
@@ -12,9 +12,10 @@ function Input(props: IInput){
     <div className="flex flex-col w-full mb-2.5">
         <label htmlFor={props.name}>{props.name}</label>
         <input type={props.type}
+            name={props.name}
             className=" focus:outline-blue-500 focus:outline-2 rounded-sm outline-1"
             id = {props.name}
-            onChange={props.value}/>
+            onChange={props.onChange}/>
     </div>
 )}
 

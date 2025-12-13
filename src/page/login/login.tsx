@@ -6,12 +6,20 @@ import { useNavigate } from "react-router-dom";
 import { registerUser, loginUser } from "../../services/loginService";
 import type { IUser } from "../../model/user";
 import { connect } from "../../services/messagesService";
+import type { IRegisterUser } from "../../services/registerUser";
 
 
 
 function LoginPage() {
   let loginUserData: IUser = {userName: '', password: ''};
-  let registerUserData: IUser = {userName: '', password: ''};
+  const [regUser, setRegUser ] = useState<IRegisterUser>({
+    email: "",
+    firstName: "",
+    lastName: "",
+    login: "",
+    password: "",
+    userName: ""
+  });
   const [isOpenRegForm, setRegForm] = useState(false);
   const navigate = useNavigate();
 
@@ -33,15 +41,26 @@ function LoginPage() {
     }
   }
 
-  const handleRegister = () => {
-
+  const handleRegister = async () => {
+    console.log(regUser);
     try{
-      if (registerUserData !== undefined){
-        registerUser(registerUserData);
+      if (regUser !== undefined){
+
+        const success = await registerUser(regUser);
+        if(success){
+          navigate("/map")
+        } 
       }
     } catch(error){
 
     }
+  }
+
+  const changeRegisterUser = (e:React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.name);
+    setRegUser(prev => ({...prev,
+      [e.target.name]: e.target.value
+    }))
   }
 
   const toggleRegisterForm = () => {
@@ -57,8 +76,8 @@ function LoginPage() {
           <p className="text-gray-600">Войдите в свой аккаунт</p>
         </div>
         <div className="space-y-6">
-          <Input name="Логин" type="login" value={(e) => {loginUserData.userName = e.target.value}}/>
-          <Input name="Пароль" type="password" value={(e) => {loginUserData.password = e.target.value}}/>
+          <Input name="Логин" type="login" onChange={(e) => {loginUserData.userName = e.target.value}}/>
+          <Input name="Пароль" type="password" onChange={(e) => {loginUserData.password = e.target.value}}/>
           <div className="flex justify-end">
             <button className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors cursor-pointer hover:underline">
               Восстановить пароль?
@@ -94,37 +113,43 @@ function LoginPage() {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <Input 
-              name="Имя" 
+              name="firstName" 
               type="text"
-              value={(e) => {registerUserData.firstName = e.target.value}}
+              onChange={(e) => {changeRegisterUser(e)}}
             />
             <Input 
-              name="Фамилия" 
+              name="lastName" 
               type="text"
-              value={(e) => {registerUserData.lastName = e.target.value}}
+              onChange={(e) => {changeRegisterUser(e)}}
             />
           </div>
           
           <Input 
-            name="Email" 
+            name="email" 
             type="email"
-            value={(e) => {registerUserData.userName = e.target.value}}
+            onChange={(e) => {changeRegisterUser(e)}}
           />
           
           <Input 
-            name="Логин" 
+            name="login" 
             type="login"
-            value={(e) => {registerUserData.userName = e.target.value}}
+            onChange={(e) => {changeRegisterUser(e)}}
           />
 
           <Input 
-            name="Пароль" 
+            name="userName" 
+            type="userName"
+            onChange={(e) => {changeRegisterUser(e)}}
+          />
+
+          <Input 
+            name="password" 
             type="password"
-            value={(e) => {registerUserData.password = e.target.value}}
+            onChange={(e) => {changeRegisterUser(e)}}
           />
           
           <Input 
-            name="Подтвердите пароль" 
+            name="validPassword" 
             type="password"
           />
 
