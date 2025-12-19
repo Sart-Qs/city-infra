@@ -1,6 +1,5 @@
 export interface IMessageRequest{
-    senderId: number,
-    recipientId: number,
-    chatId?: string,
+    userId: number,
+    chatId?: number,
     content: string,
 }

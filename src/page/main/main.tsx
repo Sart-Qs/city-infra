@@ -11,6 +11,7 @@ import type {YMapCameraRequest, YMapCenterZoomLocation, YMapLocationRequest} fro
 import { YMapMarkerPopUp } from '../../components/ballonPopUp/ballonPopUp';
 import { Image, X } from 'lucide-react';
 import type {MapEventUpdateHandler} from '@yandex/ymaps3-types'
+import { sendStatus, WebSocketConnect } from '../../services/messagesService';
 
 const token = localStorage.getItem("token");
 const getUserId = (): IJwtResponse | undefined => {
@@ -61,12 +62,19 @@ function MainPage() {
 
 
     useEffect(() =>{
+        if(token !== null){
+            WebSocketConnect()
+            setTimeout(() =>{
+                sendStatus({id: userId?.id || 0, status: "ONLINE"})
+            },10000)
+            
+        }
+
         getAllEvents().then((response) => {
             if (response)
             setAllEvevnts(response);
         })
     },[])
-
 
     function palcemarkSet (e: number[], object?: IGeoObject) {
         if(e){

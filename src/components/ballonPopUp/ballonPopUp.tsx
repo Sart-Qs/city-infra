@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { YMapDefaultMarker, YMapFeature } from "../../lib/ymaps"
-import { Heart } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import type { PolygonGeometry } from "@yandex/ymaps3-types";
 import {circle} from "@turf/turf"
 import type { IUser } from "../../model/user";
@@ -45,16 +45,24 @@ export const YMapMarkerPopUp: React.FC<IMarker> = ({
         return geometry as PolygonGeometry;
     }
 
-    function showPopUp(){``
+    function showPopUp(){
         return(
             <div className="w-3xs h-80 overflow-y-auto overflow-x-hidden">
-                <div className="mb-0.5">
-                    {images && (
-                        images.map((e,i) =>{
-                            console.log(e);
-                            return <img className="w-full h-35" key={i} src={e}/>
-                        })
-                    )}
+                <div className="w-full h-35">
+                    <div className="absolute z-10 top-1/5 left-1">
+                        <ChevronLeft/>
+                    </div>
+                    <div className="absolute right-1 z-10 top-1/5">
+                        <ChevronRight/>
+                    </div>
+                    <div className="mb-0.5">
+                        {images && (
+                            images.map((e,i) => {
+                                console.log(e);
+                                return <img className="w-full h-35" key={i} src={e}/>
+                            })
+                        )}
+                    </div>                   
                 </div>
                 <div className="flex">
                     <div className="w-10 h-10 rounded-4xl bg-amber-600 min-w-10 min-h-10">

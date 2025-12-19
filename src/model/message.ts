@@ -1,8 +1,7 @@
 export interface IMessageResponse{
     id: number,
-    chatId: string,
-    senderId: number,
-    recipientId: number,
+    chatId: number,
+    userId: number
     content: string,
     timeStamp: Date
 }
