@@ -3,7 +3,7 @@ import { ChatRoom } from "../../components/chatRoom/chtaRoom";
 import type {IChatRoomResponse } from "../../model/chatRoom";
 import { findUserByUserName, getAllChatRooms } from "../../services/chatRomService";
 import { ChatHeader } from "../../components/chatHeader/chatHeader";
-import {connect, getAllCahtMessages, sendMessage, setMessageCallBack } from "../../services/messagesService";
+import { getAllCahtMessages, sendMessage, setMessageCallBack, setStatusCallBack, WebSocketConnect } from "../../services/messagesService";
 import type { IMessageResponse } from "../../model/message";
 import { ChatMessage } from "../../components/chatMessage/chatMessage";
 import type { IJwtResponse } from "../../model/jwtResponse";
@@ -29,32 +29,34 @@ const token = localStorage.getItem("token");
 
 function ChatPage() {
     let findUserName: string | null;
-    let content: string;
     const [message, setMessage] = useState<IMessageRequest>();
     const [selectedChat, setSelectedChat] = useState<IChatRoomResponse>();
     const [chatMessages, setChatMessages] = useState<Array<IMessageResponse>>();
     const [chats, setChats] = useState<Array<IChatRoomResponse>>();
     const [userFinds, setFindUsers] = useState<IFindUserResponse>();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const userId = getUserId();
+    const user = getUserId();
 
      useEffect(() => {
         setMessageCallBack((newMessage: IMessageResponse) => {
-            if (selectedChat && 
-                ((newMessage.senderId === selectedChat.recipientId && newMessage.recipientId === selectedChat.senderId) ||
-                 (newMessage.senderId === selectedChat.senderId && newMessage.recipientId === selectedChat.recipientId))) {
+            if (selectedChat && selectedChat.id == newMessage.id) {
                 setChatMessages(prev => prev ? [...prev, newMessage] : [newMessage]);
             }
         });
-
+        setStatusCallBack((user: {status: string, id: number}) =>{
+            console.log("userOnline " + user);
+        })
         return () => {
             setMessageCallBack(null);
+            setStatusCallBack(null);
         };
     }, [selectedChat]);
 
 
     useEffect(() =>{
-        connect();
+        if(token !== null){
+            WebSocketConnect();
+        }
         getAllChatRooms().then(
             (response) => {
                 setChats(response);
@@ -64,7 +66,7 @@ function ChatPage() {
 
     function selectChat(chat: IChatRoomResponse){
         setSelectedChat(chat);
-        getAllCahtMessages(chat.recipientId).then((response) =>{
+        getAllCahtMessages(chat.id).then((response) =>{
             if (response)
             setChatMessages(response);
         });
@@ -89,11 +91,8 @@ function ChatPage() {
         setSelectedChat({
             id: 0,
             avatar: userFinds!.avatar,
-            chatId: `${userId?.id}_${userFinds?.id}`,
             chatName: userFinds!.firstName,
             lastMessage: "",
-            senderId: userId!.id,
-            recipientId: userFinds!.id,
             unReadMessages: 0
         })
         closeModal();
@@ -102,20 +101,19 @@ function ChatPage() {
     function send(){
         if(selectedChat){
             setMessage(
-                {content: content,
-                recipientId: selectedChat != undefined ? selectedChat.recipientId : 0,
-                senderId: selectedChat != undefined ? selectedChat.senderId : 0,
-                chatId: selectedChat?.chatId
+                {
+                    content: content,
+                    chatId: selectedChat.id || undefined,
+                    userId: user?.id || 0,
                 }
             )
             console.log(message)
             if(message != undefined && message?.content != undefined){
                 const newMessage: IMessageResponse = 
                     {id: 0,
-                    chatId: "",
+                    chatId: selectedChat.id,
+                    userId: user?.id || 0,
                     content: message.content,
-                    recipientId: message.recipientId,
-                    senderId: message.senderId,
                     timeStamp: new Date(),
                     }
                 setChatMessages(prev => prev ? [...prev, newMessage] : [newMessage])
@@ -171,7 +169,7 @@ function ChatPage() {
                     {/* Список чатов */}
                     <div className="flex-1 overflow-y-auto">
                         {chats?.map((e) => {
-                            return <ChatRoom key={e.id} id={e.id} chatId={e.chatId} chatName={e.chatName} lastMessage={e.lastMessage} recipientId={e.recipientId} senderId={e.senderId} unReadMessages={e.unReadMessages} onClick={() => { selectChat(e) }} />;
+                            return <ChatRoom key={e.id} id={e.id} chatId={e.id} chatName={e.chatName} lastMessage={e.lastMessage} unReadMessages={e.unReadMessages} onClick={() => { selectChat(e) }} />;
                         })}
                     </div>
                 </div>
@@ -186,7 +184,7 @@ function ChatPage() {
                     <div className="flex-1 bg-gray-50 p-6 overflow-y-auto">
                         <div className="space-y-4">
                             {chatMessages?.map((e) => {
-                                return <ChatMessage key={e.id} content={e.content} isMy={userId?.id == e.senderId ? true : false} time={new Date(e.timeStamp)} />;
+                                return <ChatMessage key={e.id} content={e.content} isMy={user?.id == e.userId ? true : false} time={new Date(e.timeStamp)} />;
                             })}
                         </div>
                     </div>
@@ -201,7 +199,12 @@ function ChatPage() {
                                 <input
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="Напишите сообщение..."
-                                    onChange={(e) => {content = e.target.value}}
+                                    onChange={(e) => {setMessage((prev) =>{
+                                        return {
+                                            ...prev,
+                                            content: e.target.value
+                                        }
+                                    })}}
                                 />
                             </div>
                             <button className="p-3 bg-blue-500 hover:bg-blue-600 rounded-full transition-colors"

@@ -2,7 +2,7 @@
 interface IChatRoom{
     onClick?: (e: React.MouseEvent) => void;
     id?: number
-    chatId?: string;
+    chatId?: number;
     chatName: string;
     lastMessage: string;
     unReadMessages: number;
